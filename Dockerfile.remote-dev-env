@@ -59,10 +59,15 @@ RUN tar -xzxf cmake-3.16.6.tar.gz \
 WORKDIR /home
 RUN tar -xzf ./ffmpeg/ffmpeg_sources.tar.gz && mv ffmpeg_sources/ ~/
 RUN /home/ffmpeg/ffmpeg_build.sh
+RUN cp -R ~/ffmpeg_build /usr/local/ffmpeg \
+  && cp /home/ffmpeg/ffmpeg.conf /etc/ld.so.conf.d/ \
+  && ldconfig
+
 
 WORKDIR /home
-RUN curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-RUN apt-get install -y nodejs node-gyp
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+RUN npm install -g node-gyp
 
 
 RUN ( \
