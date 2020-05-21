@@ -1,0 +1,79 @@
+# CLion remote docker environment (How to build docker container, run and stop it)
+#
+# Build and run:
+#   docker build -t chun/remote-dev-env:1.0 -f Dockerfile.remote-dev-env .
+#   docker run -d --cap-add sys_ptrace -p127.0.0.1:3333:22 --name dev_env chun/remote-dev-env:1.0
+#   ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:3333"
+#
+# Terminal open bash:
+#   docker exec -it dev_env /bin/bash
+#
+# stop:
+#   docker stop dev_env
+# 
+# ssh credentials (test user):
+#   user@password 
+
+FROM ubuntu:18.04
+
+RUN apt-get update \
+  && apt-get install -y ssh \
+      autoconf \
+      automake \
+      build-essential \
+      git-core \
+      gcc \
+      g++ \
+      gdb \
+      gdbserver \
+      rsync \
+      tar \
+      python \
+      vim \
+      wget \
+      curl \
+      libssl-dev \
+      libz-dev \
+      pkg-config \
+      libass-dev \
+      libfreetype6-dev \
+      libsdl2-dev \
+      libtool \
+      libva-dev \
+      libvdpau-dev \
+      libvorbis-dev \
+      libxcb1-dev \
+      libxcb-shm0-dev \
+      libxcb-xfixes0-dev \
+  && apt-get clean
+
+COPY cmake-3.16.6.tar.gz /home/
+COPY ffmpeg /home/ffmpeg/
+
+WORKDIR /home
+
+RUN tar -xzxf cmake-3.16.6.tar.gz \
+  && cd cmake-3.16.6 \
+  && ./bootstrap && make -j4 && make install
+
+WORKDIR /home
+RUN tar -xzf ./ffmpeg/ffmpeg_sources.tar.gz && mv ffmpeg_sources/ ~/
+RUN /home/ffmpeg/ffmpeg_build.sh
+
+WORKDIR /home
+RUN curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+RUN apt-get install -y nodejs node-gyp
+
+
+RUN ( \
+    echo 'LogLevel DEBUG2'; \
+    echo 'PermitRootLogin yes'; \
+    echo 'PasswordAuthentication yes'; \
+    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
+  ) > /etc/ssh/sshd_config_test_clion \
+  && mkdir /run/sshd
+
+RUN useradd -ms /bin/bash dev
+RUN echo 'dev:dev' | chpasswd
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
