@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  dev-env:
+    build:
+      context: .
+      dockerfile: Dockerfile.remote-dev-env
+    image: chun/remote-dev-env:1.0
+    container_name: dev-env
+    ports:
+      - "3333:22"
+    volumes:
+      - /Users/dana/coding/algorithm-master:/home/dev/code
+    hostname: "dev-env"
+    user: root
+    working_dir: /home/dev/code
+
+
+# 手动配置网络， 这样就有固定的 ip 了
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.129.2.0/24

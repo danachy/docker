@@ -47,15 +47,15 @@ RUN apt-get update \
       libxcb-xfixes0-dev \
   && apt-get clean
 
+# latest cmake.
 COPY cmake-3.16.6.tar.gz /home/
-COPY ffmpeg /home/ffmpeg/
-
 WORKDIR /home
-
 RUN tar -xzxf cmake-3.16.6.tar.gz \
   && cd cmake-3.16.6 \
   && ./bootstrap && make -j4 && make install
 
+# ffmpeg 3.4.2 is same to server.
+COPY ffmpeg /home/ffmpeg/
 WORKDIR /home
 RUN tar -xzf ./ffmpeg/ffmpeg_sources.tar.gz && mv ffmpeg_sources/ ~/
 RUN /home/ffmpeg/ffmpeg_build.sh
@@ -63,7 +63,7 @@ RUN cp -R ~/ffmpeg_build /usr/local/ffmpeg \
   && cp /home/ffmpeg/ffmpeg.conf /etc/ld.so.conf.d/ \
   && ldconfig
 
-
+# node version is same to server.
 WORKDIR /home
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
@@ -82,3 +82,11 @@ RUN useradd -ms /bin/bash dev
 RUN echo 'dev:dev' | chpasswd
 
 CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
+
+
+USER dev
+RUN mkdir -p /home/dev/algorithm
+WORKDIR /home/dev/algorithm
+ENV LC_ALL C.UTF-8
+
+
