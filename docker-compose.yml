@@ -10,7 +10,7 @@ services:
     ports:
       - "3333:22"
     volumes:
-      - /Users/dana/coding/algorithm-master:/home/dev/code
+      - /Users/dana/coding/algorithm-dev:/home/dev/code
     hostname: "dev-env"
     user: root
     working_dir: /home/dev/code
