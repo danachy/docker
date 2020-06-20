@@ -1,6 +1,10 @@
 # docker
 My docker files
 
+### build container
+```bash
+docker-compose build
+```
 
 ### 启动关闭 docker container
 

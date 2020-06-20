@@ -70,6 +70,13 @@ RUN apt-get install -y nodejs
 RUN npm install -g node-gyp
 
 
+RUN apt-get install -y unzip
+
+# LibTorch
+COPY libtorch-cxx11-abi-shared-with-deps-1.5.1+cpu.zip /home/
+WORKDIR /home
+RUN unzip libtorch-cxx11-abi-shared-with-deps-1.5.1+cpu.zip -d /usr/local/
+
 RUN ( \
     echo 'LogLevel DEBUG2'; \
     echo 'PermitRootLogin yes'; \
@@ -78,15 +85,6 @@ RUN ( \
   ) > /etc/ssh/sshd_config_test_clion \
   && mkdir /run/sshd
 
-RUN useradd -ms /bin/bash dev
-RUN echo 'dev:dev' | chpasswd
-
 CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
 
-
-USER dev
-RUN mkdir -p /home/dev/algorithm
-WORKDIR /home/dev/algorithm
 ENV LC_ALL C.UTF-8
-
-
