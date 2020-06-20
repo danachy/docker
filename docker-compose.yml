@@ -10,10 +10,14 @@ services:
     ports:
       - "3333:22"
     volumes:
-      - /Users/dana/coding/algorithm-dev:/home/dev/code
+      - /Users/dana/coding/algorithm-dev:/home/dev/algorithm
+      - /Users/dana/coding/test-cxx:/home/dev/test-cxx
+      - /Users/dana/coding/test-data:/home/dev/algorithm/test-data
     hostname: "dev-env"
     user: root
-    working_dir: /home/dev/code
+    working_dir: /home/dev
+    security_opt:
+      - seccomp:unconfined
 
 
 # 手动配置网络， 这样就有固定的 ip 了
